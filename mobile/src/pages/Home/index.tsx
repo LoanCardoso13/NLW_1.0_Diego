@@ -1,17 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Feather as Icon } from '@expo/vector-icons'
-import { View, ImageBackground, Text, Image, StyleSheet } from 'react-native';
+import { View, ImageBackground, Text, Image, StyleSheet, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { RectButton } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
 
 const Home = () => {
+    const [state, setState] = useState('');
+    const [city, setCity] = useState('');
     const navigation = useNavigation();
 
     function handleNavigateToPoints() {
-      navigation.navigate('Points');
+      navigation.navigate('Points', {
+        state,
+        city,
+      });
     }
 
     return (
+      <KeyboardAvoidingView style={{flex: 1}} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
         <ImageBackground 
           source={require('../../assets/home-background.png')} 
           style={styles.container}
@@ -19,11 +25,26 @@ const Home = () => {
         >
             <View style={styles.main}>
               <Image source={require('../../assets/logo.png')} />
-              <Text style={styles.title}>Your marketplace for residue collection</Text>
-              <Text style={styles.description}>We help people find their residue collection points efficiently.</Text>
+              <View>
+                <Text style={styles.title}>Your marketplace for residue collection</Text>
+                <Text style={styles.description}>We help people find their residue collection points efficiently.</Text>
+              </View>
             </View>
 
             <View style={styles.footer}>
+              <TextInput 
+                style={styles.input}
+                placeholder='Enter the State'
+                value={state}
+                onChangeText={text => setState(text)}
+              />
+              <TextInput 
+                style={styles.input}
+                placeholder='Enter the City'  
+                value={city}
+                onChangeText={text => setCity(text)}
+              />
+
               <RectButton style={styles.button} onPress={handleNavigateToPoints}>
                 <View style={styles.buttonIcon}>
                   <Text>
@@ -36,6 +57,7 @@ const Home = () => {
               </RectButton>
             </View>
         </ImageBackground>
+      </KeyboardAvoidingView>
     );
 };
 
@@ -72,7 +94,7 @@ const styles = StyleSheet.create({
     select: {},
   
     input: {
-      height: 60,
+      height: 45,
       backgroundColor: '#FFF',
       borderRadius: 10,
       marginBottom: 8,
