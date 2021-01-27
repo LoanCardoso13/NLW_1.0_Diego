@@ -4,6 +4,8 @@ import { FiArrowLeft } from 'react-icons/fi';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import api from '../../services/api';
 
+import Dropzone from '../../components/Dropzone';
+
 import './styles.css';
 
 import logo from '../../assets/logo.svg'
@@ -26,6 +28,7 @@ const CreatePoint = () => {
     const [selectedState, setSelectedState] = useState('');
     const [selectedCity, setSelectedCity] = useState('');
     const [selectedItems, setSelectedItems] = useState<number[]>([]);
+    const [selectedFile, setSelectedFile] = useState<File>();
 
     const history = useHistory();
 
@@ -74,16 +77,20 @@ const CreatePoint = () => {
         const [latitude, longitude] = [-19.8731291, -44.0294353];
         const items = selectedItems;
 
-        const data = {
-            name,
-            email,
-            whatsapp,
-            state,
-            city,
-            latitude,
-            longitude,
-            items
-        };
+        const data = new FormData();
+
+            data.append('name', name);
+            data.append('email', email);
+            data.append('whatsapp', whatsapp);
+            data.append('state', state);
+            data.append('city', city);
+            data.append('latitude', String(latitude));
+            data.append('longitude', String(longitude));
+            data.append('items', items.join(','));
+            
+            if (selectedFile) {
+                data.append('image', selectedFile); 
+            }
 
         await api.post('points', data);
 
@@ -105,6 +112,8 @@ const CreatePoint = () => {
 
             <form onSubmit={handleSubmit}>
                 <h1>Register <br/> collection point</h1>
+
+                <Dropzone onFileUploaded={setSelectedFile}/>
 
                 <fieldset>
                     <legend>
