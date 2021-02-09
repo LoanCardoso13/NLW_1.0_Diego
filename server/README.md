@@ -85,3 +85,69 @@ Let's add this script to our package.json file, along with an option to ignore t
   }
 ```
 
+To run the server from now on we type:
+
+```bash
+npm run dev
+```
+
+To make express run json we ought to explicitly code it, a server.ts file, for example, could be:
+
+```javascript
+import express from 'express';
+
+const app = express();
+
+app.use(express.json());
+
+app.get('/', (request, response) => {
+    return response.json({message: 'Hello world'});
+});
+
+app.listen(3333);
+```
+
+In order to be able to scale up our routes neatly, we create a separate file in the same directory (src) called routes.ts:
+
+```javascript
+import express from 'express';
+
+const routes = express.Router();
+
+routes.get('/', (request, response) => {
+    return response.json({message: 'Hello world'});
+});
+
+export default routes;
+```
+
+Server.ts is then left as:
+
+```javascript
+import express from 'express';
+import routes from './routes';
+
+const app = express();
+
+app.use(express.json());
+app.use(routes);
+
+app.listen(3333);
+```
+
+Next we create the database folder within src. Inside it we create a connection.ts file that configure our use of KnexJS and exports it to be used throughout the project:
+
+```javascript
+import knex from 'knex';
+import path from 'path';
+
+const connection = knex({
+    client: 'sqlite3',
+    connection: {
+        filename: path.resolve(__dirname, 'database.sqlite'),
+    },
+})
+
+export default connection;
+```
+
